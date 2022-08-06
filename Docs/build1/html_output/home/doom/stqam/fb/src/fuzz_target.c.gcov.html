@@ -1,0 +1,354 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - src_report.info - /home/doom/stqam/fb/src/fuzz_target.c</title>
+  <link rel="stylesheet" type="text/css" href="../../../../../gcov.css">
+</head>
+
+<body>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="title">LCOV - code coverage report</td></tr>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+    <tr>
+      <td width="100%">
+        <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="35%" class="headerValue"><a href="../../../../../index.html">top level</a> - <a href="index.html">home/doom/stqam/fb/src</a> - fuzz_target.c<span style="font-size: 80%;"> (source / <a href="fuzz_target.c.func-sort-c.html">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="15%"></td>
+            <td width="10%" class="headerCovTableHead">Hit</td>
+            <td width="10%" class="headerCovTableHead">Total</td>
+            <td width="15%" class="headerCovTableHead">Coverage</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">src_report.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntry">109</td>
+            <td class="headerCovTableEntry">171</td>
+            <td class="headerCovTableEntryLo">63.7 %</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Date:</td>
+            <td class="headerValue">2022-06-05 12:05:30</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntryHi">100.0 %</td>
+          </tr>
+          <tr><td><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+        </table>
+      </td>
+    </tr>
+
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+  </table>
+
+  <table cellpadding=0 cellspacing=0 border=0>
+    <tr>
+      <td><br></td>
+    </tr>
+    <tr>
+      <td>
+<pre class="sourceHeading">          Line data    Source code</pre>
+<pre class="source">
+<a name="1"><span class="lineNum">       1 </span>            : //</a>
+<span class="lineNum">       2 </span>            : // Copyright(C) 1993-1996 Id Software, Inc.
+<span class="lineNum">       3 </span>            : // Copyright(C) 2005-2014 Simon Howard
+<span class="lineNum">       4 </span>            : //
+<span class="lineNum">       5 </span>            : // This program is free software; you can redistribute it and/or
+<span class="lineNum">       6 </span>            : // modify it under the terms of the GNU General Public License
+<span class="lineNum">       7 </span>            : // as published by the Free Software Foundation; either version 2
+<span class="lineNum">       8 </span>            : // of the License, or (at your option) any later version.
+<span class="lineNum">       9 </span>            : //
+<span class="lineNum">      10 </span>            : // This program is distributed in the hope that it will be useful,
+<span class="lineNum">      11 </span>            : // but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class="lineNum">      12 </span>            : // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<span class="lineNum">      13 </span>            : // GNU General Public License for more details.
+<span class="lineNum">      14 </span>            : //
+<span class="lineNum">      15 </span>            : // DESCRIPTION:
+<span class="lineNum">      16 </span>            : //      DOOM main program (D_DoomMain) and game loop (D_DoomLoop),
+<span class="lineNum">      17 </span>            : //      plus functions to determine game mode (shareware, registered),
+<span class="lineNum">      18 </span>            : //      parse command line parameters, configure game parameters (turbo),
+<span class="lineNum">      19 </span>            : //      and call the startup functions.
+<span class="lineNum">      20 </span>            : //
+<span class="lineNum">      21 </span>            : #include &lt;ctype.h&gt;
+<span class="lineNum">      22 </span>            : #include &lt;stdio.h&gt;
+<span class="lineNum">      23 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      24 </span>            : #include &lt;string.h&gt;
+<span class="lineNum">      25 </span>            : 
+<span class="lineNum">      26 </span>            : #include &quot;config.h&quot;
+<span class="lineNum">      27 </span>            : #include &quot;deh_main.h&quot;
+<span class="lineNum">      28 </span>            : #include &quot;doomdef.h&quot;
+<span class="lineNum">      29 </span>            : #include &quot;doomstat.h&quot;
+<span class="lineNum">      30 </span>            : 
+<span class="lineNum">      31 </span>            : #include &quot;dstrings.h&quot;
+<span class="lineNum">      32 </span>            : #include &quot;sounds.h&quot;
+<span class="lineNum">      33 </span>            : 
+<span class="lineNum">      34 </span>            : #include &quot;d_iwad.h&quot;
+<span class="lineNum">      35 </span>            : 
+<span class="lineNum">      36 </span>            : #include &quot;s_sound.h&quot;
+<span class="lineNum">      37 </span>            : #include &quot;v_diskicon.h&quot;
+<span class="lineNum">      38 </span>            : #include &quot;v_video.h&quot;
+<span class="lineNum">      39 </span>            : #include &quot;w_main.h&quot;
+<span class="lineNum">      40 </span>            : #include &quot;w_wad.h&quot;
+<span class="lineNum">      41 </span>            : #include &quot;z_zone.h&quot;
+<span class="lineNum">      42 </span>            : 
+<span class="lineNum">      43 </span>            : #include &quot;f_finale.h&quot;
+<span class="lineNum">      44 </span>            : #include &quot;f_wipe.h&quot;
+<span class="lineNum">      45 </span>            : 
+<span class="lineNum">      46 </span>            : #include &quot;m_argv.h&quot;
+<span class="lineNum">      47 </span>            : #include &quot;m_config.h&quot;
+<span class="lineNum">      48 </span>            : #include &quot;m_controls.h&quot;
+<span class="lineNum">      49 </span>            : #include &quot;m_menu.h&quot;
+<span class="lineNum">      50 </span>            : #include &quot;m_misc.h&quot;
+<span class="lineNum">      51 </span>            : #include &quot;p_saveg.h&quot;
+<span class="lineNum">      52 </span>            : 
+<span class="lineNum">      53 </span>            : #include &quot;i_endoom.h&quot;
+<span class="lineNum">      54 </span>            : #include &quot;i_input.h&quot;
+<span class="lineNum">      55 </span>            : #include &quot;i_joystick.h&quot;
+<span class="lineNum">      56 </span>            : #include &quot;i_system.h&quot;
+<span class="lineNum">      57 </span>            : #include &quot;i_timer.h&quot;
+<span class="lineNum">      58 </span>            : #include &quot;i_video.h&quot;
+<span class="lineNum">      59 </span>            : 
+<span class="lineNum">      60 </span>            : #include &quot;g_game.h&quot;
+<span class="lineNum">      61 </span>            : 
+<span class="lineNum">      62 </span>            : #include &quot;am_map.h&quot;
+<span class="lineNum">      63 </span>            : #include &quot;hu_stuff.h&quot;
+<span class="lineNum">      64 </span>            : #include &quot;net_client.h&quot;
+<span class="lineNum">      65 </span>            : #include &quot;net_dedicated.h&quot;
+<span class="lineNum">      66 </span>            : #include &quot;net_query.h&quot;
+<span class="lineNum">      67 </span>            : #include &quot;st_stuff.h&quot;
+<span class="lineNum">      68 </span>            : #include &quot;wi_stuff.h&quot;
+<span class="lineNum">      69 </span>            : 
+<span class="lineNum">      70 </span>            : #include &quot;p_setup.h&quot;
+<span class="lineNum">      71 </span>            : #include &quot;r_local.h&quot;
+<span class="lineNum">      72 </span>            : #include &quot;statdump.h&quot;
+<span class="lineNum">      73 </span>            : 
+<span class="lineNum">      74 </span>            : #include &quot;d_main.h&quot;
+<span class="lineNum">      75 </span>            : #include &lt;errno.h&gt;
+<span class="lineNum">      76 </span>            : #include &lt;stdlib.h&gt;
+<span class="lineNum">      77 </span>            : 
+<span class="lineNum">      78 </span>            : #include &lt;err.h&gt;
+<span class="lineNum">      79 </span>            : #include &lt;unistd.h&gt;
+<span class="lineNum">      80 </span>            : 
+<span class="lineNum">      81 </span>            : #include &lt;setjmp.h&gt;
+<span class="lineNum">      82 </span>            : 
+<span class="lineNum">      83 </span>            : /** jmp environment */
+<span class="lineNum">      84 </span>            : extern jmp_buf g_jmp_buf;
+<span class="lineNum">      85 </span>            : 
+<span class="lineNum">      86 </span>            : void I_Grace_Quit(void);
+<span class="lineNum">      87 </span>            : void D_IdentifyVersion(void);
+<span class="lineNum">      88 </span>            : void D_BindVariables(void);
+<span class="lineNum">      89 </span>            : void PrintDehackedBanners();
+<span class="lineNum">      90 </span>            : 
+<span class="lineNum">      91 </span>            : // should be defined during compilation
+<span class="lineNum">      92 </span>            : #ifndef FREEDOM_WAD
+<span class="lineNum">      93 </span>            : #define FREEDOM_WAD &quot;freedom.wad&quot;
+<span class="lineNum">      94 </span>            : #endif
+<span class="lineNum">      95 </span>            : 
+<span class="lineNum">      96 </span>            : char *iwadfile;
+<span class="lineNum">      97 </span>            : //
+<a name="98"><span class="lineNum">      98 </span>            : // D_DoomMain</a>
+<span class="lineNum">      99 </span>            : //
+<span class="lineNum">     100 </span><span class="lineCov">       8331 : static boolean D_AddFile(char *filename) {</span>
+<span class="lineNum">     101 </span><span class="lineCov">       8331 :   wad_file_t *handle;</span>
+<span class="lineNum">     102 </span><span class="lineCov">       8331 : </span>
+<span class="lineNum">     103 </span><span class="lineCov">       8331 :   printf(&quot; adding %s\n&quot;, filename);</span>
+<span class="lineNum">     104 </span><span class="lineCov">       8331 :   handle = W_AddFile(filename);</span>
+<span class="lineNum">     105 </span><span class="lineCov">       8331 : </span>
+<span class="lineNum">     106 </span><span class="lineCov">       8331 :   return handle != NULL;</span>
+<a name="107"><span class="lineNum">     107 </span><span class="lineCov">       8331 : }</span></a>
+<span class="lineNum">     108 </span>            : 
+<span class="lineNum">     109 </span><span class="lineCov">       8097 : static void LoadIwadDeh(void) {</span>
+<span class="lineNum">     110 </span><span class="lineCov">       8097 :   // The Freedoom IWADs have DEHACKED lumps that must be loaded.</span>
+<span class="lineNum">     111 </span><span class="lineCov">       8097 :   if (gamevariant == freedoom || gamevariant == freedm) {</span>
+<span class="lineNum">     112 </span><span class="lineCov">       8097 :     // Old versions of Freedoom (before 2014-09) did not have technically</span>
+<span class="lineNum">     113 </span><span class="lineCov">       8097 :     // valid DEHACKED lumps, so ignore errors and just continue if this</span>
+<span class="lineNum">     114 </span><span class="lineCov">       8097 :     // is an old IWAD.</span>
+<span class="lineNum">     115 </span><span class="lineCov">       8097 :     DEH_LoadLumpByName(&quot;DEHACKED&quot;, false, true);</span>
+<span class="lineNum">     116 </span><span class="lineCov">       8097 :   }</span>
+<a name="117"><span class="lineNum">     117 </span><span class="lineCov">       8097 : }</span></a>
+<span class="lineNum">     118 </span>            : 
+<span class="lineNum">     119 </span><span class="lineCov">       8097 : static void InitGameVersion(void) {</span>
+<span class="lineNum">     120 </span><span class="lineCov">       8097 :   gameversion = exe_doom_1_9;</span>
+<span class="lineNum">     121 </span><span class="lineCov">       8097 :   gamemission = doom2;</span>
+<span class="lineNum">     122 </span><span class="lineCov">       8097 : }</span>
+<span class="lineNum">     123 </span>            : 
+<span class="lineNum">     124 </span>            : // global pointer to current fuzz data
+<span class="lineNum">     125 </span>            : extern const uint8_t *g_fuzz_data;
+<span class="lineNum">     126 </span>            : extern size_t g_fuzz_size;
+<a name="127"><span class="lineNum">     127 </span>            : </a>
+<span class="lineNum">     128 </span>            : /** Entry point for the fuzzer */
+<span class="lineNum">     129 </span><span class="lineCov">       8681 : int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {</span>
+<span class="lineNum">     130 </span><span class="lineCov">       8681 :   // set longjmp. Execution goes here if the main program is about to exit</span>
+<span class="lineNum">     131 </span><span class="lineCov">       8681 :   // we trap this and return from the function instead</span>
+<span class="lineNum">     132 </span><span class="lineCov">       8681 :   if (setjmp(g_jmp_buf)) {</span>
+<span class="lineNum">     133 </span><span class="lineCov">       8223 :     return 0;</span>
+<span class="lineNum">     134 </span><span class="lineCov">       8223 :   }</span>
+<span class="lineNum">     135 </span><span class="lineCov">        458 : </span>
+<span class="lineNum">     136 </span><span class="lineCov">        458 :   // -- make fuzz data globally accessible</span>
+<span class="lineNum">     137 </span><span class="lineCov">        458 :   g_fuzz_data = data;</span>
+<span class="lineNum">     138 </span><span class="lineCov">        458 :   g_fuzz_size = size;</span>
+<span class="lineNum">     139 </span><span class="lineCov">        458 : </span>
+<span class="lineNum">     140 </span><span class="lineCov">        458 :   // prepare command line arguments (these might affect coverage)</span>
+<span class="lineNum">     141 </span><span class="lineCov">        458 :   char *args[] = {&quot;doom_fuzz&quot;,</span>
+<span class="lineNum">     142 </span><span class="lineCov">        458 :                   // -- main WAD file. Additional WAD files are added later</span>
+<span class="lineNum">     143 </span><span class="lineCov">        458 :                   &quot;-iwad&quot;, FREEDOM_WAD,</span>
+<span class="lineNum">     144 </span><span class="lineCov">        458 :                   // disable gui and music</span>
+<span class="lineNum">     145 </span><span class="lineCov">        458 :                   &quot;-nogui&quot;, &quot;-nosound&quot;, &quot;-nosfx&quot;, &quot;-nomusic&quot;, &quot;-nomusicpacks&quot;,</span>
+<span class="lineNum">     146 </span><span class="lineCov">        458 :                   NULL};</span>
+<span class="lineNum">     147 </span><span class="lineCov">        458 : </span>
+<span class="lineNum">     148 </span><span class="lineCov">        458 :   // Start initializing Doom subsystem</span>
+<span class="lineNum">     149 </span><span class="lineCov">        458 :   myargc = (sizeof(args) / sizeof(args[0])) - 1;</span>
+<span class="lineNum">     150 </span><span class="lineCov">        458 :   myargv = args;</span>
+<span class="lineNum">     151 </span><span class="lineCov">        458 :   int numiwadlumps;</span>
+<span class="lineNum">     152 </span><span class="lineCov">        458 : </span>
+<span class="lineNum">     153 </span><span class="lineCov">        458 :   DEH_printf(&quot;Z_Init: Init zone memory allocation daemon. \n&quot;);</span>
+<span class="lineNum">     154 </span><span class="lineCov">        458 :   Z_Init();</span>
+<span class="lineNum">     155 </span><span class="lineCov">        458 : </span>
+<span class="lineNum">     156 </span><span class="lineCov">        458 :   // Auto-detect the configuration dir.</span>
+<span class="lineNum">     157 </span><span class="lineCov">        458 :   M_SetConfigDir(NULL);</span>
+<span class="lineNum">     158 </span><span class="lineCov">        458 : </span>
+<span class="lineNum">     159 </span><span class="lineCov">        458 :   // init subsystems</span>
+<span class="lineNum">     160 </span><span class="lineCov">        458 :   DEH_printf(&quot;V_Init: allocate screens.\n&quot;);</span>
+<span class="lineNum">     161 </span><span class="lineCov">        458 :   V_Init();</span>
+<span class="lineNum">     162 </span><span class="lineCov">        458 : </span>
+<span class="lineNum">     163 </span><span class="lineCov">        458 :   // Load configuration files before initialising other subsystems.</span>
+<span class="lineNum">     164 </span><span class="lineCov">        458 :   DEH_printf(&quot;M_LoadDefaults: Load system defaults.\n&quot;);</span>
+<span class="lineNum">     165 </span><span class="lineCov">        458 :   M_SetConfigFilenames(&quot;default.cfg&quot;, PROGRAM_PREFIX &quot;doom.cfg&quot;);</span>
+<span class="lineNum">     166 </span><span class="lineCov">        458 :   D_BindVariables();</span>
+<span class="lineNum">     167 </span><span class="lineCov">        458 :   M_LoadDefaults();</span>
+<span class="lineNum">     168 </span><span class="lineCov">        458 : </span>
+<span class="lineNum">     169 </span><span class="lineCov">        458 :   // Save configuration at exit.</span>
+<span class="lineNum">     170 </span><span class="lineCov">        458 :   I_AtExit(M_SaveDefaults, false);</span>
+<span class="lineNum">     171 </span><span class="lineCov">        458 : </span>
+<span class="lineNum">     172 </span><span class="lineCov">        458 :   // Find main IWAD file and load it.</span>
+<span class="lineNum">     173 </span><span class="lineCov">        458 :   iwadfile = D_FindIWAD(IWAD_MASK_DOOM, &amp;gamemission);</span>
+<span class="lineNum">     174 </span><span class="lineCov">        458 : </span>
+<span class="lineNum">     175 </span><span class="lineCov">        458 :   modifiedgame = false;</span>
+<span class="lineNum">     176 </span><span class="lineCov">        458 : </span>
+<span class="lineNum">     177 </span><span class="lineCov">        458 :   DEH_printf(&quot;W_Init: Init WADfiles.\n&quot;);</span>
+<span class="lineNum">     178 </span><span class="lineCov">        458 :   D_AddFile(iwadfile);</span>
+<span class="lineNum">     179 </span><span class="lineCov">        458 :   numiwadlumps = numlumps;</span>
+<span class="lineNum">     180 </span><span class="lineCov">        458 :   W_CheckCorrectIWAD(doom);</span>
+<span class="lineNum">     181 </span><span class="lineCov">        458 : </span>
+<span class="lineNum">     182 </span><span class="lineCov">        458 :   // Now that we've loaded the IWAD, we can figure out what gamemission</span>
+<span class="lineNum">     183 </span><span class="lineCov">        458 :   // we're playing and which version of Vanilla Doom we need to emulate.</span>
+<span class="lineNum">     184 </span><span class="lineCov">        458 :   D_IdentifyVersion();</span>
+<span class="lineNum">     185 </span><span class="lineCov">        458 :   InitGameVersion();</span>
+<span class="lineNum">     186 </span><span class="lineCov">        458 : </span>
+<span class="lineNum">     187 </span><span class="lineCov">        458 :   // Check which IWAD variant we are using.</span>
+<span class="lineNum">     188 </span><span class="lineCov">        458 : </span>
+<span class="lineNum">     189 </span><span class="lineCov">        458 :   gamevariant = freedoom;</span>
+<span class="lineNum">     190 </span><span class="lineCov">        458 :   //!</span>
+<span class="lineNum">     191 </span><span class="lineCov">        458 :   // @category mod</span>
+<span class="lineNum">     192 </span><span class="lineCov">        458 :   //</span>
+<span class="lineNum">     193 </span><span class="lineCov">        458 :   // Disable automatic loading of Dehacked patches for certain</span>
+<span class="lineNum">     194 </span><span class="lineCov">        458 :   // IWAD files.</span>
+<span class="lineNum">     195 </span><span class="lineCov">        458 :   //</span>
+<span class="lineNum">     196 </span><span class="lineCov">       8097 :   if (!M_ParmExists(&quot;-nodeh&quot;)) {</span>
+<span class="lineNum">     197 </span><span class="lineCov">       8097 :     // Some IWADs have dehacked patches that need to be loaded for</span>
+<span class="lineNum">     198 </span><span class="lineCov">       8097 :     // them to be played properly.</span>
+<span class="lineNum">     199 </span><span class="lineCov">       8097 :     LoadIwadDeh();</span>
+<span class="lineNum">     200 </span><span class="lineCov">       8097 :   }</span>
+<span class="lineNum">     201 </span><span class="lineCov">        458 : </span>
+<span class="lineNum">     202 </span><span class="lineCov">        458 :   DEH_ParseCommandLine();</span>
+<span class="lineNum">     203 </span><span class="lineCov">        458 : </span>
+<span class="lineNum">     204 </span><span class="lineCov">        458 :   modifiedgame = true;</span>
+<span class="lineNum">     205 </span><span class="lineCov">        458 : </span>
+<span class="lineNum">     206 </span><span class="lineCov">        458 :   // generate wad file from random data provided by libFuzzer</span>
+<span class="lineNum">     207 </span><span class="lineCov">        458 :   // We have modified DooM so that any file with 'fuzz' in its name</span>
+<span class="lineNum">     208 </span><span class="lineCov">        458 :   // is loaded from the global fuzz data g_fuzz_data</span>
+<span class="lineNum">     209 </span><span class="lineCov">        458 :   char *filename = &quot;fuzz.wad&quot;;</span>
+<span class="lineNum">     210 </span><span class="lineCov">        458 : </span>
+<span class="lineNum">     211 </span><span class="lineCov">        458 :   DEH_printf(&quot;Fuzzing with file: %s\n&quot;, filename);</span>
+<span class="lineNum">     212 </span><span class="lineCov">        458 :   if (!W_AddFile(filename)) {</span>
+<span class="lineNum">     213 </span><span class="lineCov">        458 :     return 0;</span>
+<span class="lineNum">     214 </span><span class="lineCov">        458 :   }</span>
+<span class="lineNum">     215 </span><span class="lineNoCov">          0 : </span>
+<span class="lineNum">     216 </span><span class="lineNoCov">          0 :   // Generate the WAD hash table.  Speed things up a bit.</span>
+<span class="lineNum">     217 </span><span class="lineNoCov">          0 :   W_GenerateHashTable();</span>
+<span class="lineNum">     218 </span><span class="lineNoCov">          0 : </span>
+<span class="lineNum">     219 </span><span class="lineNoCov">          0 :   savegamedir = M_GetSaveGameDir(D_SaveGameIWADName(gamemission, gamevariant));</span>
+<span class="lineNum">     220 </span><span class="lineNoCov">          0 : </span>
+<span class="lineNum">     221 </span><span class="lineNoCov">          0 :   // Check for -file in shareware</span>
+<span class="lineNum">     222 </span><span class="lineCov">       6549 :   if (modifiedgame &amp;&amp; (gamevariant != freedoom)) {</span>
+<span class="lineNum">     223 </span><span class="lineNoCov">          0 :     // These are the lumps that will be checked in IWAD,</span>
+<span class="lineNum">     224 </span><span class="lineNoCov">          0 :     // if any one is not present, execution will be aborted.</span>
+<span class="lineNum">     225 </span><span class="lineNoCov">          0 :     char name[23][8] = {&quot;e2m1&quot;,   &quot;e2m2&quot;,   &quot;e2m3&quot;,    &quot;e2m4&quot;,   &quot;e2m5&quot;,</span>
+<span class="lineNum">     226 </span><span class="lineNoCov">          0 :                         &quot;e2m6&quot;,   &quot;e2m7&quot;,   &quot;e2m8&quot;,    &quot;e2m9&quot;,   &quot;e3m1&quot;,</span>
+<span class="lineNum">     227 </span><span class="lineNoCov">          0 :                         &quot;e3m3&quot;,   &quot;e3m3&quot;,   &quot;e3m4&quot;,    &quot;e3m5&quot;,   &quot;e3m6&quot;,</span>
+<span class="lineNum">     228 </span><span class="lineNoCov">          0 :                         &quot;e3m7&quot;,   &quot;e3m8&quot;,   &quot;e3m9&quot;,    &quot;dphoof&quot;, &quot;bfgga0&quot;,</span>
+<span class="lineNum">     229 </span><span class="lineNoCov">          0 :                         &quot;heada1&quot;, &quot;cybra1&quot;, &quot;spida1d1&quot;};</span>
+<span class="lineNum">     230 </span><span class="lineNoCov">          0 :     int i;</span>
+<span class="lineNum">     231 </span><span class="lineNoCov">          0 : </span>
+<span class="lineNum">     232 </span><span class="lineNoCov">          0 :     // Check for fake IWAD with right name,</span>
+<span class="lineNum">     233 </span><span class="lineNoCov">          0 :     // but w/o all the lumps of the registered version.</span>
+<span class="lineNum">     234 </span><span class="lineNoCov">          0 :     if (gamemode == registered)</span>
+<span class="lineNum">     235 </span><span class="lineNoCov">          0 :       for (i = 0; i &lt; 23; i++)</span>
+<span class="lineNum">     236 </span><span class="lineNoCov">          0 :         if (W_CheckNumForName(name[i]) &lt; 0)</span>
+<span class="lineNum">     237 </span><span class="lineNoCov">          0 :           I_Error(DEH_String(&quot;\nThis is not the registered version.&quot;));</span>
+<span class="lineNum">     238 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     239 </span><span class="lineNoCov">          0 : </span>
+<span class="lineNum">     240 </span><span class="lineCov">       6549 :   if (W_CheckNumForName(&quot;SS_START&quot;) &gt;= 0 || W_CheckNumForName(&quot;FF_END&quot;) &gt;= 0) {</span>
+<span class="lineNum">     241 </span><span class="lineNoCov">          0 :     I_PrintDivider();</span>
+<span class="lineNum">     242 </span><span class="lineNoCov">          0 :     printf(&quot; WARNING: The loaded WAD file contains modified sprites or\n&quot;</span>
+<span class="lineNum">     243 </span><span class="lineNoCov">          0 :            &quot; floor textures.  You may want to use the '-merge' command\n&quot;</span>
+<span class="lineNum">     244 </span><span class="lineNoCov">          0 :            &quot; line option instead of '-file'.\n&quot;);</span>
+<span class="lineNum">     245 </span><span class="lineNoCov">          0 :   }</span>
+<span class="lineNum">     246 </span><span class="lineNoCov">          0 : </span>
+<span class="lineNum">     247 </span><span class="lineNoCov">          0 :   I_PrintStartupBanner(&quot;Freedoom: Phase2&quot;);</span>
+<span class="lineNum">     248 </span><span class="lineNoCov">          0 :   PrintDehackedBanners();</span>
+<span class="lineNum">     249 </span><span class="lineNoCov">          0 : </span>
+<span class="lineNum">     250 </span><span class="lineNoCov">          0 :   DEH_printf(&quot;I_Init: Setting up machine state.\n&quot;);</span>
+<span class="lineNum">     251 </span><span class="lineNoCov">          0 :   I_CheckIsScreensaver();</span>
+<span class="lineNum">     252 </span><span class="lineNoCov">          0 :   I_InitTimer();</span>
+<span class="lineNum">     253 </span><span class="lineNoCov">          0 :   I_InitJoystick();</span>
+<span class="lineNum">     254 </span><span class="lineNoCov">          0 :   I_InitSound(true);</span>
+<span class="lineNum">     255 </span><span class="lineNoCov">          0 :   I_InitMusic();</span>
+<span class="lineNum">     256 </span><span class="lineNoCov">          0 : </span>
+<span class="lineNum">     257 </span><span class="lineNoCov">          0 :   timelimit = 0;</span>
+<span class="lineNum">     258 </span><span class="lineNoCov">          0 : </span>
+<span class="lineNum">     259 </span><span class="lineNoCov">          0 :   DEH_printf(&quot;M_Init: Init miscellaneous info.\n&quot;);</span>
+<span class="lineNum">     260 </span><span class="lineNoCov">          0 :   M_Init();</span>
+<span class="lineNum">     261 </span><span class="lineNoCov">          0 : </span>
+<span class="lineNum">     262 </span><span class="lineNoCov">          0 :   DEH_printf(&quot;R_Init: Init DOOM refresh daemon - &quot;);</span>
+<span class="lineNum">     263 </span><span class="lineNoCov">          0 :   R_Init();</span>
+<span class="lineNum">     264 </span><span class="lineNoCov">          0 : </span>
+<span class="lineNum">     265 </span><span class="lineNoCov">          0 :   DEH_printf(&quot;\nP_Init: Init Playloop state.\n&quot;);</span>
+<span class="lineNum">     266 </span><span class="lineNoCov">          0 :   P_Init();</span>
+<span class="lineNum">     267 </span><span class="lineNoCov">          0 : </span>
+<span class="lineNum">     268 </span><span class="lineNoCov">          0 :   DEH_printf(&quot;S_Init: Setting up sound.\n&quot;);</span>
+<span class="lineNum">     269 </span><span class="lineNoCov">          0 :   S_Init(sfxVolume * 8, musicVolume * 8);</span>
+<span class="lineNum">     270 </span><span class="lineNoCov">          0 : </span>
+<span class="lineNum">     271 </span><span class="lineNoCov">          0 :   G_InitNew(sk_medium, 1, 1);</span>
+<span class="lineNum">     272 </span><span class="lineNoCov">          0 :   DEH_printf(&quot;Setup level completed\n&quot;);</span>
+<span class="lineNum">     273 </span><span class="lineNoCov">          0 : </span>
+<span class="lineNum">     274 </span><span class="lineNoCov">          0 :   // we are done with fuzzing, gracefully exit for next run</span>
+<span class="lineNum">     275 </span><span class="lineNoCov">          0 :   I_Grace_Quit();</span>
+<span class="lineNum">     276 </span><span class="lineNoCov">          0 : </span>
+<span class="lineNum">     277 </span><span class="lineNoCov">          0 :   return 0;</span>
+<span class="lineNum">     278 </span><span class="lineNoCov">          0 : }</span>
+</pre>
+      </td>
+    </tr>
+  </table>
+  <br>
+
+  <table width="100%" border=0 cellspacing=0 cellpadding=0>
+    <tr><td class="ruler"><img src="../../../../../glass.png" width=3 height=3 alt=""></td></tr>
+    <tr><td class="versionInfo">Generated by: <a href="http://ltp.sourceforge.net/coverage/lcov.php" target="_parent">LCOV version 1.13</a></td></tr>
+  </table>
+  <br>
+
+</body>
+</html>
