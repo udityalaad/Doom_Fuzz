@@ -27,7 +27,7 @@ From Wikipedia:
 > Doom is considered one of the pioneering first-person shooter games, introducing to IBM-compatible computers features such as 3D graphics, third-dimension spatiality, networked multiplayer gameplay, and support for player-created modifications with the Doom WAD format. Since its debut in 1993, over 10 million copies of games in the Doom series have been sold; the series has spawned numerous sequels, novels, comic books, board games, and film adaptations. 
 
 Since then, Doom has been open-sourced and ported to everything under the sun: [scientific calculator](https://www.youtube.com/watch?v=nduMTX86Zl0), [Macbook's touchbar](https://www.theverge.com/circuitbreaker/2016/11/21/13697058/macbook-touchbar-doom-hack-sure-why-not), [pregnancy test](https://kotaku.com/doom-running-on-a-pregnancy-tests-screen-1844978428), you name it. 
-
+ 
 While the original Doom code is freely available [here](https://github.com/id-Software/DOOM), it is not really friendly with modern systems, so it has been forked and updated, creating what we now call *Doom source port*. For this assignment, we are using [Chocolate-Doom](https://www.chocolate-doom.org/wiki/index.php/Chocolate_Doom).
 
 From this point on, we will use Doom and Chocolate-Doom interchangeably.
